@@ -1,12 +1,13 @@
 import React from 'react'
-import { StyleSheet, Text, View } from 'react-native';
+import theme from './src/theme'
 import { Groups } from '@screens/groups'
+import { ThemeProvider } from 'styled-components/native';
 
 export default function App() {
   return (
-    <View>
+    <ThemeProvider theme={theme}>
       <Groups/>
-    </View>
+    </ThemeProvider>
   );
 }
 
