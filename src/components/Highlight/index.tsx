@@ -11,7 +11,7 @@ export const Highlight = ({title, subtitle}: HighlightProps) => {
     return (
         <S.Container>
             <S.Title>
-                {subtitle}
+                {title}
             </S.Title>
 
             <S.SubTitle>
