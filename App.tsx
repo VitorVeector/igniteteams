@@ -1,6 +1,7 @@
 import React from 'react'
 import { Groups } from '@screens/groups'
 import { NewGroup } from '@screens/NewGroup'
+import { Player } from '@screens/Players'
 
 import theme from './src/theme'
 import { ThemeProvider } from 'styled-components/native';
@@ -19,7 +20,7 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent/>
-      {fontsLoaded ? <NewGroup/> : <Loading/>}
+      {fontsLoaded ? <Player/> : <Loading/>}
     </ThemeProvider>
   );
 }
