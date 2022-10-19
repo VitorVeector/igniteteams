@@ -8,9 +8,6 @@ type ButtonProps = {
     type: ButtonTypeStyleProps;
 }
 
-type TextProps = {
-    children: ReactNode
-}
 
 export const Container = styled(TouchableOpacity) <ButtonProps>`
     flex: 1;

@@ -10,7 +10,7 @@ import { FlatList } from 'react-native'
 import { PlayerCard } from '@components/PlayerCard'
 import { ListEmpty } from '@components/ListEmpty'
 
-export const Player = () => {
+export const Players = () => {
 
     const [team, setTeam] = useState('Time A')
     const [players, setPlayers] = useState<string[]>([])
