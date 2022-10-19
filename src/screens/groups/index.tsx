@@ -8,13 +8,14 @@ import { ListEmpty } from '@components/ListEmpty';
 import { Button } from '@components/Button';
 import {useNavigation} from '@react-navigation/native'
 
-export function Groups(props) {
+export function Groups() {
 
   const [groups, setGroups] = useState<string[]>([])
 
+  const navigation = useNavigation()
+
   function handleNewGroup(){
-    groups.push('Number')
-    props.navigation.navigate('players')
+    navigation.navigate('newgroup')
   }
 
   return (
