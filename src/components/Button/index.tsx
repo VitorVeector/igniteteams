@@ -1,6 +1,7 @@
 import * as S from './styles'
+import {TouchableOpacityProps} from 'react-native'
 
-type ButtonProps = {
+type ButtonProps = TouchableOpacityProps & {
     text: string;
     type?: S.ButtonTypeStyleProps
 }
