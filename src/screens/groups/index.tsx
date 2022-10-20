@@ -1,12 +1,14 @@
 import { Header } from '@components/Header';
 import { Highlight } from '@components/Highlight';
 import { GroupCard } from '@components/GroupCard';
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import * as S from './styles';
 import { FlatList } from 'react-native';
 import { ListEmpty } from '@components/ListEmpty';
 import { Button } from '@components/Button';
 import {useNavigation} from '@react-navigation/native'
+import { groupsGetAll } from '@storage/group/groupGetAll';
+import {useFocusEffect} from '@react-navigation/native'
 
 export function Groups() {
 
@@ -17,6 +19,19 @@ export function Groups() {
   function handleNewGroup(){
     navigation.navigate('newgroup')
   }
+
+  async function fetchGroups(){
+    try {
+      const data = await groupsGetAll()
+      setGroups(data)
+    } catch(err){
+      console.log(err)
+    }
+  }
+
+  useFocusEffect(useCallback(() => {
+    fetchGroups()
+  }, []))
 
   return (
     <S.Container>

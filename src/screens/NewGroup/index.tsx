@@ -5,6 +5,8 @@ import {Input} from '@components/Input'
 import * as S from './styles'
 import { useNavigation } from '@react-navigation/native'
 import { useState } from 'react'
+import { groupCreate } from '@storage/group/groupCreate';
+
 
 export const NewGroup = () => {
 
@@ -12,9 +14,15 @@ export const NewGroup = () => {
 
     const navigation = useNavigation()
 
-    function handlePlayer(){
-        navigation.navigate('players', {group: groupName})
+    async function handlePlayer(){
+        try{
+            await groupCreate(groupName)
+            navigation.navigate('players', {group: groupName})
+        } catch (err){
+            console.log(err)
+        }
     }
+
 
     return (
         <S.Container>
