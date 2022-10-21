@@ -8,7 +8,7 @@ type GroupCardProps = TouchableOpacityProps & {
 
 export const GroupCard = ({title, ...rest}: GroupCardProps) => {
     return (
-        <S.Container>
+        <S.Container {...rest}>
             <S.Icon/>
             <S.Title>{title}</S.Title>
         </S.Container>

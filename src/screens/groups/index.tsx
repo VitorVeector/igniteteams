@@ -9,6 +9,7 @@ import { Button } from '@components/Button';
 import {useNavigation} from '@react-navigation/native'
 import { groupsGetAll } from '@storage/group/groupGetAll';
 import {useFocusEffect} from '@react-navigation/native'
+import { Alert } from 'react-native';
 
 export function Groups() {
 
@@ -29,6 +30,10 @@ export function Groups() {
     }
   }
 
+  function handleOpenGroups(group: string){
+    navigation.navigate('players', {group})
+  }
+
   useFocusEffect(useCallback(() => {
     fetchGroups()
   }, []))
@@ -41,7 +46,7 @@ export function Groups() {
         style={{width: '100%'}}
         data={groups}
         keyExtractor={item => item}
-        renderItem={({item}) => <GroupCard title={item}/>}
+        renderItem={({item}) => <GroupCard title={item} onPress={() => handleOpenGroups(item)} />}
         contentContainerStyle={ groups.length===0 && {flex: 1}}
         ListEmptyComponent={() => <ListEmpty message='Que tal cadastrar uma primeira turma'/>}
         />
