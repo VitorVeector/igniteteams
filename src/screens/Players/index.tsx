@@ -5,11 +5,11 @@ import {ButtonIcon} from '@components/ButtonIcon'
 import {Button} from '@components/Button' 
 import { Input } from '@components/Input'
 import { Filter } from '@components/Filter'
-import React, { useRef, useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 import { FlatList, TextInput } from 'react-native'
 import { PlayerCard } from '@components/PlayerCard'
 import { ListEmpty } from '@components/ListEmpty'
-import { useRoute } from '@react-navigation/native'
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native'
 import { playerAdd } from '@storage/players/playerAdd'
 import { Alert } from 'react-native'
 import { AppError } from '@utils/AppError'
@@ -17,12 +17,15 @@ import { playersGetByGroupAndTeam } from '@storage/players/playersGetByGroupAndT
 import { PlayerStorageDTO } from '@storage/players/PlayerStorageDTO'
 import { useEffect } from 'react'
 import { playerRemoveByGroup } from '@storage/players/playerRemoveByGroup'
+import { groupeRemove } from '@storage/group/groupRemove'
 
 type RouteParams = {
     group: string
 }
 
 export const Players = () => {
+
+    const navigation = useNavigation()
 
     const newPlayerNameInputRef = useRef<TextInput>(null)
 
@@ -94,6 +97,26 @@ export const Players = () => {
         
     }
 
+    function handleRemoveGroup(groupName: string){
+        try {
+            Alert.alert('Remover grupo', 'deseja remover esse grupo?', [
+                {
+                    text: 'Remover',
+                    onPress: async () => {
+                        await groupeRemove(groupName)
+                        navigation.navigate('groups')
+                    }
+                },
+                {
+                    text: 'Cancelar',
+                    style: 'cancel'
+                }
+            ])
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
       useEffect(()=>{
         fetchPlayersByTeam()
       },[team])
@@ -134,7 +157,7 @@ export const Players = () => {
                         {paddingBottom: 100},
                         players.length === 0 && { flex: 1}
                     ]}/>
-                    <Button text='Remover turma' type='SECONDARY'/>
+                    <Button text='Remover turma' type='SECONDARY' onPress={() => handleRemoveGroup(group)}/>
         </S.Container>
     )
 }
