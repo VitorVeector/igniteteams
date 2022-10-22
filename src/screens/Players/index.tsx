@@ -16,6 +16,7 @@ import { AppError } from '@utils/AppError'
 import { playersGetByGroupAndTeam } from '@storage/players/playersGetByGroupAndTeam'
 import { PlayerStorageDTO } from '@storage/players/PlayerStorageDTO'
 import { useEffect } from 'react'
+import { playerRemoveByGroup } from '@storage/players/playerRemoveByGroup'
 
 type RouteParams = {
     group: string
@@ -71,10 +72,32 @@ export const Players = () => {
         }
       }
 
+      async function handleRemovePlayer(name: string){
+        try {
+            Alert.alert('Remover player', `Deseja remover ${name} do grupo?`,[
+            {
+                text: 'Remover',
+                onPress: async () => {
+                    await playerRemoveByGroup(name, group)
+                    fetchPlayersByTeam()
+                }
+            },
+            {
+                text: 'Cancelar',
+                style: 'cancel'
+            }
+        ])
+        } catch (error) {
+            console.log(error)
+            Alert.alert('Remover player', 'Impossível de remover player')
+        }
+        
+    }
 
       useEffect(()=>{
         fetchPlayersByTeam()
       },[team])
+
 
     return (
         <S.Container>
@@ -101,7 +124,7 @@ export const Players = () => {
                     data={players}
                     keyExtractor={item => item.name}
                     renderItem={({item}) => (
-                        <PlayerCard name={item.name} onRemove={()=>{}} />
+                        <PlayerCard name={item.name} onRemove={()=>handleRemovePlayer(item.name)} />
                     )}
                     ListEmptyComponent={() => (
                         <ListEmpty message='Não há pessoas nesse time'/>
