@@ -1,8 +1,8 @@
 import * as S from './styles'
-import {Header} from '@components/Header' 
-import {Highlight} from '@components/Highlight' 
-import {ButtonIcon} from '@components/ButtonIcon' 
-import {Button} from '@components/Button' 
+import { Header } from '@components/Header'
+import { Highlight } from '@components/Highlight'
+import { ButtonIcon } from '@components/ButtonIcon'
+import { Button } from '@components/Button'
 import { Input } from '@components/Input'
 import { Filter } from '@components/Filter'
 import React, { useCallback, useRef, useState } from 'react'
@@ -18,27 +18,29 @@ import { PlayerStorageDTO } from '@storage/players/PlayerStorageDTO'
 import { useEffect } from 'react'
 import { playerRemoveByGroup } from '@storage/players/playerRemoveByGroup'
 import { groupeRemove } from '@storage/group/groupRemove'
+import { Loading } from '@components/Loading'
 
 type RouteParams = {
     group: string
 }
 
 export const Players = () => {
+    const [isLoading, setIsLoading] = useState(true)
 
     const navigation = useNavigation()
 
     const newPlayerNameInputRef = useRef<TextInput>(null)
 
     const route = useRoute()
-    const {group} = route.params as RouteParams
+    const { group } = route.params as RouteParams
 
     const [team, setTeam] = useState('Time A')
     const [players, setPlayers] = useState<PlayerStorageDTO[]>([]);
 
     const [playerName, setPlayerName] = useState<string>('')
 
-    async function handleAddPlayer(playerName: string){
-        if(playerName.trim().length === 0){
+    async function handleAddPlayer(playerName: string) {
+        if (playerName.trim().length === 0) {
             return Alert.alert('Nova pessoa', 'Informe o nome para adicionar pessoa.')
         }
 
@@ -47,57 +49,61 @@ export const Players = () => {
             team,
         }
 
-        try {    
-            await playerAdd(newPlayer, group )
+        try {
+            await playerAdd(newPlayer, group)
             newPlayerNameInputRef.current?.blur()
             setPlayerName('')
-            fetchPlayersByTeam() 
-            
+            fetchPlayersByTeam()
+
         } catch (error) {
-            if(error instanceof AppError){
+            if (error instanceof AppError) {
                 Alert.alert('Nova pessoa', error.message)
             } else {
                 console.log(error)
-                Alert.alert('Nova pessoa', 'Não é possível adicionar nova pessoa.') 
+                Alert.alert('Nova pessoa', 'Não é possível adicionar nova pessoa.')
             }
-            
+
         }
     }
 
     async function fetchPlayersByTeam() {
         try {
-          const playersByTeam = await playersGetByGroupAndTeam(group, team);
-          setPlayers(playersByTeam)
-          
-        } catch (error) {
-          console.log(error);
-          Alert.alert('Pessoas', 'Não foi possível carregar as pessoas do time selecionado.');
-        }
-      }
+            setIsLoading(true)
+            const playersByTeam = await playersGetByGroupAndTeam(group, team);
+            setPlayers(playersByTeam)
+            
 
-      async function handleRemovePlayer(name: string){
+        } catch (error) {
+            console.log(error);
+            Alert.alert('Pessoas', 'Não foi possível carregar as pessoas do time selecionado.');
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    async function handleRemovePlayer(name: string) {
         try {
-            Alert.alert('Remover player', `Deseja remover ${name} do grupo?`,[
-            {
-                text: 'Remover',
-                onPress: async () => {
-                    await playerRemoveByGroup(name, group)
-                    fetchPlayersByTeam()
+            Alert.alert('Remover player', `Deseja remover ${name} do grupo?`, [
+                {
+                    text: 'Remover',
+                    onPress: async () => {
+                        await playerRemoveByGroup(name, group)
+                        fetchPlayersByTeam()
+                    }
+                },
+                {
+                    text: 'Cancelar',
+                    style: 'cancel'
                 }
-            },
-            {
-                text: 'Cancelar',
-                style: 'cancel'
-            }
-        ])
+            ])
         } catch (error) {
             console.log(error)
             Alert.alert('Remover player', 'Impossível de remover player')
         }
-        
+
     }
 
-    function handleRemoveGroup(groupName: string){
+    function handleRemoveGroup(groupName: string) {
         try {
             Alert.alert('Remover grupo', 'deseja remover esse grupo?', [
                 {
@@ -117,47 +123,52 @@ export const Players = () => {
         }
     }
 
-      useEffect(()=>{
+    useEffect(() => {
         fetchPlayersByTeam()
-      },[team])
+    }, [team])
 
 
     return (
         <S.Container>
-            <Header showBackButton/>
-            <Highlight title={group} subtitle='adicione a galera e separe os times'/>
+            <Header showBackButton />
+            <Highlight title={group} subtitle='adicione a galera e separe os times' />
 
             <S.Form>
-                <Input inputRef={newPlayerNameInputRef} placeholder='Nome da pessoa' autoCorrect={false} onChangeText={setPlayerName} value={playerName}/>
-                <ButtonIcon icon='add' onPress={() => handleAddPlayer(playerName)}/>
+                <Input inputRef={newPlayerNameInputRef} placeholder='Nome da pessoa' autoCorrect={false} onChangeText={setPlayerName} value={playerName} />
+                <ButtonIcon icon='add' onPress={() => handleAddPlayer(playerName)} />
             </S.Form>
-            
+
             <S.HeaderList>
-                <FlatList 
+                <FlatList
                     data={['Time A', 'Time B']}
                     keyExtractor={(item) => item}
-                    renderItem={({item}) => (
-                        <Filter title={item} isActive={item === team} onPress={() => setTeam(item)}/>
+                    renderItem={({ item }) => (
+                        <Filter title={item} isActive={item === team} onPress={() => setTeam(item)} />
                     )}
-                    horizontal/>
-                    <S.NumberOfPlayers>{players.length}</S.NumberOfPlayers>
+                    horizontal />
+                <S.NumberOfPlayers>{players.length}</S.NumberOfPlayers>
             </S.HeaderList>
 
-            <FlatList 
-                    data={players}
-                    keyExtractor={item => item.name}
-                    renderItem={({item}) => (
-                        <PlayerCard name={item.name} onRemove={()=>handleRemovePlayer(item.name)} />
-                    )}
-                    ListEmptyComponent={() => (
-                        <ListEmpty message='Não há pessoas nesse time'/>
-                    )}
-                    showsVerticalScrollIndicator={false}
-                    contentContainerStyle={[
-                        {paddingBottom: 100},
-                        players.length === 0 && { flex: 1}
-                    ]}/>
-                    <Button text='Remover turma' type='SECONDARY' onPress={() => handleRemoveGroup(group)}/>
+            {
+                isLoading ? <Loading /> :
+                    <FlatList
+                        data={players}
+                        keyExtractor={item => item.name}
+                        renderItem={({ item }) => (
+                            <PlayerCard name={item.name} onRemove={() => handleRemovePlayer(item.name)} />
+                        )}
+                        ListEmptyComponent={() => (
+                            <ListEmpty message='Não há pessoas nesse time' />
+                        )}
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={[
+                            { paddingBottom: 100 },
+                            players.length === 0 && { flex: 1 }
+                        ]} />
+            }
+
+
+            <Button text='Remover turma' type='SECONDARY' onPress={() => handleRemoveGroup(group)} />
         </S.Container>
     )
 }
