@@ -1,8 +1,12 @@
 import * as S from './styles'
-import { TextInputProps } from 'react-native'
+import { TextInput, TextInputProps } from 'react-native'
 import { useTheme } from 'styled-components/native'
 
-export const Input = ({...rest}: TextInputProps) => {
+type InputProps = TextInputProps & {
+    inputRef?: React.RefObject<TextInput>
+}
+
+export const Input = ({...rest}: InputProps) => {
     const { COLORS }= useTheme() 
 
     return (

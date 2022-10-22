@@ -32,7 +32,6 @@ export const NewGroup = () => {
         }
     }
 
-
     return (
         <S.Container>
             <Header showBackButton/>     
